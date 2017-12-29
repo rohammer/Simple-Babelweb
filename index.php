@@ -93,10 +93,7 @@
 				# Ausgabe
 				echo "<h1>Simple Babelweb</h1>";
 				echo "<table>";
-				echo	"<tr><td>".$output['data']['name']."</td></tr>";
-				echo	"<tr><td>".$output['data']['version']."</td></tr>";
-				echo	"<tr><td>".$output['data']['host']."</td></tr>";
-				echo	"<tr><td>".$output['data']['id']."</td></tr>";
+				foreach($output['data'] as $temp) { echo "<tr><td>$temp</td></tr>"; }
 				echo "</table>";
 
 				echo "<H2>Interfaces</H2>";
