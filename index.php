@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Simple Babelweb</title>
-
 		<style>
 			table {
 				font-family: monospace, sans-serif;
@@ -20,20 +19,19 @@
 			}
 		</style>
 	</head>
-
 	<body>
 		<?php
 			$addr = "::1";
 			$port = "33123";
 
 			$msg = "dump\r\n";
-			$sock = socket_create(AF_INET6,SOCK_STREAM,0) or die("Cannot create socket");
-			socket_connect($sock,$addr,$port) or die("Cannot connect to socket");
-			$read = socket_read($sock,1024);
+			$sock = socket_create(AF_INET6, SOCK_STREAM, 0) or die("Cannot create socket");
+			socket_connect($sock, $addr, $port) or die("Cannot connect to socket");
+			$read = socket_read($sock, 1024);
 			$data = explode(PHP_EOL, $read);
 
 			# dump anfordern
-			socket_write($sock,$msg,strlen($msg));
+			socket_write($sock, $msg, strlen($msg));
 
 			# Daten einlesen
 			$interface = array();
@@ -42,21 +40,20 @@
 
 			while (1) {
 				$read = socket_read($sock, 1024, PHP_NORMAL_READ);
-				if (preg_match("/interface\b/", $read)) {
-					$interface[] = $read;
-				}
-				if (preg_match("/neighbour\b/", $read)) {
-					$neighbour[] = $read;
-				}
-				if (preg_match("/xroute\b/", $read)) {
-					$xroute[] = $read;
-				}
-				if (preg_match("/\broute\b/", $read)){
-					break 1;
-				}
+				if (preg_match("/interface\b/", $read)) { $interface[] = $read; }
+				if (preg_match("/neighbour\b/", $read)) { $neighbour[] = $read; }
+				if (preg_match("/xroute\b/", $read)) { $xroute[] = $read; }
+				if (preg_match("/\broute\b/", $read)){ break 1; }
 			}
 			socket_close($sock);
 
+			$output['data'] = array(
+				'name' => $data[0],
+				'version' => $data[1],
+				'host' => $data[2],
+				'id' => $data[3],
+			);
+		
 			foreach ($interface as $temp) {
 				$tempdata = explode(" ", $temp);
 				$output['interfaces'][] = array(
@@ -91,19 +88,15 @@
 				);
 			}
 
-			if($_REQUEST['format'] == 'json') {
-				echo json_encode($output);
-			}
+			if($_REQUEST['format'] == 'json') { echo json_encode($output); }
 			else {
 				# Ausgabe
 				echo "<h1>Simple Babelweb</h1>";
 				echo "<table>";
-				for($i = 0; $i < count($data); ++$i) {
-					if ($data[$i] == "ok") {
-						break;
-					}
-					echo "<tr><td>$data[$i]</td></tr>";
-				}
+				echo	"<tr><td>".$output['data']['name']."</td></tr>";
+				echo	"<tr><td>".$output['data']['version']."</td></tr>";
+				echo	"<tr><td>".$output['data']['host']."</td></tr>";
+				echo	"<tr><td>".$output['data']['id']."</td></tr>";
 				echo "</table>";
 
 				echo "<H2>Interfaces</H2>";
@@ -115,48 +108,43 @@
 						<th>ipv4</th>
 					</tr>';
 				foreach($output['interfaces'] as $interface) {
-					echo "<tr><td>".$interface['interface']."</td>".
-							"<td>".$interface['up']."</td>".
-							"<td>".$interface['ipv6']."</td>".
-							"<td>".$interface['ipv4']."</td></tr>";
+					echo "<tr>";
+					foreach($interface as $temp) { echo "<td>$temp</td>"; }
+					echo "</tr>";
 				}
 				echo "</table>";
+
 				echo "<H2>Neighbours</H2>";
-					echo '<table>
-						<tr>
-							<th>neighbour</th>
-							<th>address</th>
-							<th>interface</th>
-							<th>reach</th>
-							<th>rxcost</th>
-							<th>txcost</th>
-							<th>rtt</th>
-							<th>rttcost</th>
-							<th>cost</th>
-						</tr>';
+				echo '<table>
+					<tr>
+						<th>neighbour</th>
+						<th>address</th>
+						<th>interface</th>
+						<th>reach</th>
+						<th>rxcost</th>
+						<th>txcost</th>
+						<th>rtt</th>
+						<th>rttcost</th>
+						<th>cost</th>
+					</tr>';
 				foreach($output['neighbours'] as $neighbour) {
-					echo "<tr><td>".$neighbour['neighbour']."</td>".
-							"<td>".$neighbour['address']."</td>".
-							"<td>".$neighbour['interface']."</td>".
-							"<td>".$neighbour['reach']."</td>".
-							"<td>".$neighbour['rxcost']."</td>".
-							"<td>".$neighbour['txcost']."</td>".
-							"<td>".$neighbour['rtt']."</td>".
-							"<td>".$neighbour['rttcost']."</td>".
-							"<td>".$neighbour['cost']."</td></tr>";
+					echo "<tr>";
+					foreach($neighbour as $temp) { echo "<td>$temp</td>"; }
+					echo "</tr>";
 				}
 				echo "</table>";
+
 				echo "<H2>Redistributed routes</H2>";
-					echo '<table>
-						<tr>
-							<th>prefix</th>
-							<th>from</th>
-							<th>metric</th>
-						</tr>';
+				echo '<table>
+					<tr>
+						<th>prefix</th>
+						<th>from</th>
+						<th>metric</th>
+					</tr>';
 				foreach($output['xroutes'] as $xroute) {
-					echo "<tr><td>".$xroute['prefix']."</td>".
-							"<td>".$xroute['from']."</td>".
-							"<td>".$xroute['metric']."</td></tr>";
+					echo "<tr>";
+					foreach($xroute as $temp) { echo "<td>$temp</td>"; }
+					echo "</tr>";
 				}
 				echo "</table>";
 			}
