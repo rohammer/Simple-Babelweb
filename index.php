@@ -55,11 +55,6 @@
 					break 1;
 				}
 			}
-			$json = json_encode(array(
-				'interface' => $interface,
-				'neighbour' => $neighbour,
-				'xroute' => $xroute,
-			));
 			socket_close($sock);
 
 			foreach ($interface as $temp) {
