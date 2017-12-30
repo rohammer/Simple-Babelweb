@@ -67,7 +67,6 @@
 			foreach ($neighbour as $temp) {
 				$tempdata = explode(" ", $temp);
 				$output['neighbours'][] = array(
-					'neighbour' => $tempdata[2],
 					'address' => $tempdata[4],
 					'interface' => $tempdata[6],
 					'reach' => $tempdata[8],
@@ -83,7 +82,6 @@
 				$tempdata = explode(" ", $temp);
 				$output['xroutes'][] = array(
 					'prefix' => $tempdata[4],
-					'from' => $tempdata[6],
 					'metric' => $tempdata[8],
 				);
 			}
@@ -114,7 +112,6 @@
 				echo "<H2>Neighbours</H2>";
 				echo '<table>
 					<tr>
-						<th>neighbour</th>
 						<th>address</th>
 						<th>interface</th>
 						<th>reach</th>
@@ -135,7 +132,6 @@
 				echo '<table>
 					<tr>
 						<th>prefix</th>
-						<th>from</th>
 						<th>metric</th>
 					</tr>';
 				foreach($output['xroutes'] as $xroute) {
