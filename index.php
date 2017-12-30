@@ -82,9 +82,9 @@
 			foreach ($xroute as $temp) {
 				$tempdata = explode(" ", $temp);
 				$output['xroutes'][] = array(
-					'prefix' => $tempdata[2],
-					'from' => $tempdata[4],
-					'metric' => $tempdata[6],
+					'prefix' => $tempdata[4],
+					'from' => $tempdata[6],
+					'metric' => $tempdata[8],
 				);
 			}
 
