@@ -21,6 +21,7 @@
 	</head>
 	<body>
 		<?php
+			error_reporting(0);
 			$addr = "::1";
 			$port = "33123";
 
