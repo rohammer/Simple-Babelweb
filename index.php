@@ -178,9 +178,9 @@
 
             if($_REQUEST['v4table'] == '1') {
 
-                echo "<H2>routes</H2>";
+                echo "<H2>ipv4 routing table</H2>";
                 echo '<table>';
-				$v4routen = shell_exec('ip r s t fff');
+				$v4routen = shell_exec('ip r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
 				$v4route = explode(PHP_EOL, $v4routen);
 				for($i = 0; $i < count($v4route); ++$i) {
 					echo "<tr>";
@@ -196,9 +196,9 @@
  
             if($_REQUEST['v6table'] == '1') {
 
-                echo "<H2>ipv6 routes table fff</H2>";
+                echo "<H2>ipv6 routing table</H2>";
                 echo '<table>';
-				$v6routen = shell_exec('ip -6 r s t fff');
+				$v6routen = shell_exec('ip -6 r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
 				$v6route = explode(PHP_EOL, $v6routen);
 				for($i = 0; $i < count($v6route); ++$i) {
 					echo "<tr>";
