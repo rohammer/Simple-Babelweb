@@ -174,11 +174,52 @@
                 }
                 echo "</table>";
                 }
+
+
+            if($_REQUEST['v4table'] == '1') {
+
+                echo "<H2>routes</H2>";
+                echo '<table>';
+				$v4routen = shell_exec('ip r s t fff');
+				$v4route = explode(PHP_EOL, $v4routen);
+				for($i = 0; $i < count($v4route); ++$i) {
+					echo "<tr>";
+					$line = explode(" ", $v4route[$i]);
+					for($n = 0; $n < 5; ++$n) {
+						echo "<td>$line[$n]</td>";
+					}
+					echo "</tr>";
+				}	
+
+                echo "</table>";
+                }
+ 
+            if($_REQUEST['v6table'] == '1') {
+
+                echo "<H2>ipv6 routes table fff</H2>";
+                echo '<table>';
+				$v6routen = shell_exec('ip -6 r s t fff');
+				$v6route = explode(PHP_EOL, $v6routen);
+				for($i = 0; $i < count($v6route); ++$i) {
+					echo "<tr>";
+					$line = explode(" ", $v6route[$i]);
+					for($n = 0; $n < 8; ++$n) {
+						echo "<td>$line[$n]</td>";
+					}
+					echo "</tr>";
+				}	
+
+                echo "</table>";
+                }
+ 
+
             }
         ?>
     <br>
     <form action="index.php" method="post">
-        <button type="submit" name="routes" value="1">show all routes</button>
+        <button type="submit" name="routes" value="1">show all babel routes</button>
+        <button type="submit" name="v4table" value="1">show table fff ipv4</button>
+        <button type="submit" name="v6table" value="1">show table fff ipv6</button>
     </form>
         
     </body>
