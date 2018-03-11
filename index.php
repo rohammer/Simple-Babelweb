@@ -23,7 +23,7 @@
         <?php
             error_reporting(0);
             $addr = "::1";
-            $port = "33123";
+            $port = shell_exec('grep local-port /etc/babeld.conf | cut -d" " -f 2');
 
             $msg = "dump\r\n";
             $sock = socket_create(AF_INET6, SOCK_STREAM, 0) or die("Cannot create socket");
