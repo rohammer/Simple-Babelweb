@@ -216,7 +216,7 @@
             }
         ?>
     <br>
-    <form action="index.php" method="post">
+    <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
         <button type="submit" name="routes" value="1">show all babel routes</button>
         <button type="submit" name="v4table" value="1">show table fff ipv4</button>
         <button type="submit" name="v6table" value="1">show table fff ipv6</button>
