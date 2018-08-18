@@ -98,6 +98,7 @@
                     'via' => $tempdata[16],
                     'interface' => $tempdata[18],
                     'metric' => $tempdata[12],
+                    'destid' => $tempdata[10],
                 );
             }
 
@@ -166,6 +167,7 @@
                         <th>via</th>
                         <th>device</th>
                         <th>metric</th>
+			<th>Destination ID</th>
                     </tr>';
                 foreach($output['routes'] as $route) {
                     echo "<tr>";
@@ -236,6 +238,7 @@
                         <th>via</th>
                         <th>device</th>
                         <th>metric</th>
+			<th>Destination ID</th>
                     </tr>';
                 foreach($output['routes'] as $route) {
                         if ($route['target'] == $_GET['ip'])
