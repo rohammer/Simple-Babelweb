@@ -186,7 +186,15 @@
 					echo "<tr>";
 					$line = explode(" ", $v4route[$i]);
 					for($n = 0; $n < 5; ++$n) {
-						echo "<td>$line[$n]</td>";
+                                                if ($n == 0)
+                                                {
+                                                        echo '<td><a href="'.$_SERVER["PHP_SELF"].'/?ip='.$line[$n].'">'.$line[$n].'</a></td>';
+                                                }
+                                                else
+                                                {
+                                                        echo '<td>'.$line[$n].'</td>';
+                                                }
+
 					}
 					echo "</tr>";
 				}	
@@ -204,14 +212,42 @@
 					echo "<tr>";
 					$line = explode(" ", $v6route[$i]);
 					for($n = 0; $n < 8; ++$n) {
-						echo "<td>$line[$n]</td>";
+                                                if ($n == 0)
+                                                {
+                                                        echo '<td><a href="'.$_SERVER["PHP_SELF"].'/?ip='.$line[$n].'">'.$line[$n].'</a></td>';
+                                                }
+                                                else
+                                                {
+                                                        echo '<td>'.$line[$n].'</td>';
+                                                }
+
 					}
 					echo "</tr>";
 				}	
 
                 echo "</table>";
                 }
- 
+		if($_GET['ip'] != '') {
+                echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
+                echo '<table>
+                    <tr>
+                        <th>target</th>
+                        <th>installed</th>
+                        <th>via</th>
+                        <th>device</th>
+                        <th>metric</th>
+                    </tr>';
+                foreach($output['routes'] as $route) {
+                        if ($route['target'] == $_GET['ip'])
+                        {
+                                echo "<tr>";
+                                foreach($route as $temp) { echo "<td>$temp</td>"; }
+                                echo "</tr>";
+                        }
+                }
+                echo "</table>";
+                }
+
 
             }
         ?>
