@@ -68,16 +68,23 @@
 			);
 		}
 		foreach ($neighbour as $temp) {
-			$tempdata = explode(" ", $temp);
+			$address=explode(" ",strstr($temp,"address"));
+			$interface=explode(" ",strstr($temp,"interface"));
+			$reach=explode(" ",strstr($temp,"reach"));
+			$rxcost=explode(" ",strstr($temp,"rxcost"));
+			$txcost=explode(" ",strstr($temp,"txcost"));
+			$rtt=explode(" ",strstr($temp,"rtt"));
+			$rttcost=explode(" ",strstr($temp,"rttcost"));
+			$cost=explode(" ",strstr($temp,"cost"));
 			$output['neighbours'][] = array(
-				'address' => $tempdata[4],
-				'interface' => $tempdata[6],
-				'reach' => $tempdata[8],
-				'rxcost' => $tempdata[10],
-				'txcost' => $tempdata[12],
-				'rtt' => $tempdata[14],
-				'rttcost' => $tempdata[16],
-				'cost' => $tempdata[18],
+				'address' => $address[1],
+				'interface' => $interface[1],
+				'reach' => $reach[1],
+				'rxcost' => $rxcost[1],
+				'txcost' => $txcost[1],
+				'rtt' => $rtt[1],
+				'rttcost' => $rttcost[1],
+				'cost' => $cost[1],
 			);
 		}
 
@@ -110,6 +117,28 @@
 			echo "<table>";
 			foreach($output['data'] as $temp) { echo "<tr><td>$temp</td></tr>"; }
 			echo "</table>";
+
+			if($_GET['ip'] != '') {
+				echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
+				echo '<table>
+					<tr>
+						<th>target</th>
+						<th>installed</th>
+						<th>via</th>
+						<th>device</th>
+						<th>metric</th>
+						<th>Destination ID</th>
+					</tr>';
+				foreach($output['routes'] as $route) {
+					if ($route['target'] == $_GET['ip']) {
+						echo "<tr>";
+						foreach($route as $temp) { echo "<td>$temp</td>"; }
+						echo "</tr>";
+					}
+				}
+				echo "</table>";
+			}
+
 			echo "<H2>Interfaces</H2>";
 			echo '<table>
 			<tr>
@@ -154,7 +183,7 @@
 				echo "</tr>";
 			}
 		        echo "</table>";
-			if($_REQUEST['routes'] == '1') {
+			if($_GET['routes'] == '1') {
 				echo "<H2>routes</H2>";
 				echo '<table>
 					<tr>
@@ -166,15 +195,24 @@
 						<th>Destination ID</th>
 					</tr>';
 				foreach($output['routes'] as $route) {
+					$set=0;
 					echo "<tr>";
-					foreach($route as $temp) { echo "<td>$temp</td>"; }
+					foreach($route as $temp) {
+						if ($set == 0) {
+							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$temp.'">'.$temp.'</a></td>';
+							$set=1; 
+						}
+						else {
+							echo "<td>$temp</td>";
+						}
+					}
 					echo "</tr>";
 				}
 				echo "</table>";
 			}
 
 
-			if($_REQUEST['v4table'] == '1') {
+			if($_GET['v4table'] == '1') {
 				echo "<H2>ipv4 routing table</H2>";
 				echo '<table>';
 				$v4routen = shell_exec('ip r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
@@ -184,7 +222,7 @@
 					$line = explode(" ", $v4route[$i]);
 					for($n = 0; $n < 5; ++$n) {
 						if ($n == 0) {
-							echo '<td><a href="'.$_SERVER["PHP_SELF"].'/?ip='.$line[$n].'">'.$line[$n].'</a></td>';
+							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
 						} 
 						else {
 							echo '<td>'.$line[$n].'</td>';
@@ -195,52 +233,52 @@
 				echo "</table>";
 			}
 	 
-			if($_REQUEST['v6table'] == '1') {
+			if($_GET['v6table'] == '1') {
 				echo "<H2>ipv6 routing table</H2>";
-				echo '<table>';
+				echo '<table>
+					<tr>
+						<th>Destination</th>
+						<th>Source Specific</th>
+						<th>via</th>
+						<th>Device</th>
+						<th>proto</th>
+						<th>Kernelmetric</th>
+					</tr>';
 				$v6routen = shell_exec('ip -6 r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
 				$v6route = explode(PHP_EOL, $v6routen);
 				for($i = 0; $i < count($v6route); ++$i) {
 					echo "<tr>";
-					$line = explode(" ", $v6route[$i]);
+					/*$line = explode(" ", $v6route[$i]);
 					for($n = 0; $n < 8; ++$n) {
-					if ($n == 0) {
-						echo '<td><a href="'.$_SERVER["PHP_SELF"].'/?ip='.$line[$n].'">'.$line[$n].'</a></td>';
-					}
-					else {
-						echo '<td>'.$line[$n].'</td>';
-					}
-				}
+						if ($n == 0) {
+							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
+						}
+						else {
+							echo '<td>'.$line[$n].'</td>';
+						}
+					}*/
+					$destination=explode(" ", $v6route[$i]);
+                                        $source=explode(" ", strstr($v6route[$i],"from"));
+                                        $via=explode(" ", strstr($v6route[$i],"via"));
+                                        $device=explode(" ", strstr($v6route[$i],"dev"));
+                                        $proto=explode(" ", strstr($v6route[$i],"proto"));
+                                        $metric=explode(" ", strstr($v6route[$i],"metric"));
+					echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$destination[0].'">'.$destination[0].'</a></td>';
+                                        echo '<td>'.$source[1].'</td>';
+                                        echo '<td>'.$via[1].'</td>';
+                                        echo '<td>'.$device[1].'</td>';
+                                        echo '<td>'.$proto[1].'</td>';
+                                        echo '<td>'.$metric[1].'</td>';
+
 				echo "</tr>";
 			}	
 
 			echo "</table>";
 			}
-			if($_GET['ip'] != '') {
-				echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
-				echo '<table>
-				    <tr>
-				        <th>target</th>
-				        <th>installed</th>
-				        <th>via</th>
-				        <th>device</th>
-				        <th>metric</th>
-					<th>Destination ID</th>
-				    </tr>';
-				foreach($output['routes'] as $route) {
-				        if ($route['target'] == $_GET['ip'])
-				        {
-				                echo "<tr>";
-				                foreach($route as $temp) { echo "<td>$temp</td>"; }
-				                echo "</tr>";
-				        }
-				}
-				echo "</table>";
-		        }
 		}
 		?>
 		<br>
-		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
 			<button type="submit" name="routes" value="1">show all babel routes</button>
 			<button type="submit" name="v4table" value="1">show import/export table ipv4</button>
 			<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
