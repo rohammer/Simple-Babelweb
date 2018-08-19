@@ -114,6 +114,14 @@
 		else {
 			# Ausgabe
 			echo "<h1>Simple Babelweb</h1>";
+	                ?><form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
+				<button type="submit" name="" value="">home</button>
+        	                <button type="submit" name="routes" value="1">show all babel routes</button>
+                	        <button type="submit" name="v4table" value="1">show import/export table ipv4</button>
+                        	<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
+	                </form>
+			<H2>Babel information</H2><?php
+			
 			echo "<table>";
 			foreach($output['data'] as $temp) { echo "<tr><td>$temp</td></tr>"; }
 			echo "</table>";
@@ -139,50 +147,52 @@
 				echo "</table>";
 			}
 
-			echo "<H2>Interfaces</H2>";
-			echo '<table>
-			<tr>
-				<th>Interface</th>
-				<th>up</th>
-				<th>ipv6</th>
-				<th>ipv4</th>
-				</tr>';
-			foreach($output['interfaces'] as $interface) {
-			echo "<tr>";
-			foreach($interface as $temp) { echo "<td>$temp</td>"; }
-			echo "</tr>";
-			}
-			echo "</table>";
-			echo "<H2>Neighbours</H2>";
-			echo '<table>
+			if (empty($_GET)) {
+				echo "<H2>Interfaces</H2>";
+				echo '<table>
 				<tr>
-					<th>address</th>
-					<th>interface</th>
-					<th>reach</th>
-					<th>rxcost</th>
-					<th>txcost</th>
-					<th>rtt</th>
-					<th>rttcost</th>
-					<th>cost</th>
-				</tr>';
-			foreach($output['neighbours'] as $neighbour) {
-				echo "<tr>";
-				foreach($neighbour as $temp) { echo "<td>$temp</td>"; }
-				echo "</tr>";
+					<th>Interface</th>
+					<th>up</th>
+					<th>ipv6</th>
+					<th>ipv4</th>
+					</tr>';
+				foreach($output['interfaces'] as $interface) {
+					echo "<tr>";
+					foreach($interface as $temp) { echo "<td>$temp</td>"; }
+					echo "</tr>";
+				}
+				echo "</table>";
+				echo "<H2>Neighbours</H2>";
+				echo '<table>
+					<tr>
+						<th>address</th>
+						<th>interface</th>
+						<th>reach</th>
+						<th>rxcost</th>
+						<th>txcost</th>
+						<th>rtt</th>
+						<th>rttcost</th>
+						<th>cost</th>
+					</tr>';
+				foreach($output['neighbours'] as $neighbour) {
+					echo "<tr>";
+					foreach($neighbour as $temp) { echo "<td>$temp</td>"; }
+					echo "</tr>";
+				}
+				echo "</table>";
+				echo "<H2>Redistributed routes</H2>";
+				echo '<table>
+					<tr>
+						<th>prefix</th>
+						<th>metric</th>
+					</tr>';
+				foreach($output['xroutes'] as $xroute) {
+					echo "<tr>";
+					foreach($xroute as $temp) { echo "<td>$temp</td>"; }
+					echo "</tr>";
+				}
+			        echo "</table>";
 			}
-			echo "</table>";
-			echo "<H2>Redistributed routes</H2>";
-			echo '<table>
-				<tr>
-					<th>prefix</th>
-					<th>metric</th>
-				</tr>';
-			foreach($output['xroutes'] as $xroute) {
-				echo "<tr>";
-				foreach($xroute as $temp) { echo "<td>$temp</td>"; }
-				echo "</tr>";
-			}
-		        echo "</table>";
 			if($_GET['routes'] == '1') {
 				echo "<H2>routes</H2>";
 				echo '<table>
@@ -248,27 +258,18 @@
 				$v6route = explode(PHP_EOL, $v6routen);
 				for($i = 0; $i < count($v6route); ++$i) {
 					echo "<tr>";
-					/*$line = explode(" ", $v6route[$i]);
-					for($n = 0; $n < 8; ++$n) {
-						if ($n == 0) {
-							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
-						}
-						else {
-							echo '<td>'.$line[$n].'</td>';
-						}
-					}*/
 					$destination=explode(" ", $v6route[$i]);
-                                        $source=explode(" ", strstr($v6route[$i],"from"));
-                                        $via=explode(" ", strstr($v6route[$i],"via"));
-                                        $device=explode(" ", strstr($v6route[$i],"dev"));
-                                        $proto=explode(" ", strstr($v6route[$i],"proto"));
-                                        $metric=explode(" ", strstr($v6route[$i],"metric"));
+					$source=explode(" ", strstr($v6route[$i],"from"));	
+					$via=explode(" ", strstr($v6route[$i],"via"));
+					$device=explode(" ", strstr($v6route[$i],"dev"));
+					$proto=explode(" ", strstr($v6route[$i],"proto"));
+					$metric=explode(" ", strstr($v6route[$i],"metric"));
 					echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$destination[0].'">'.$destination[0].'</a></td>';
-                                        echo '<td>'.$source[1].'</td>';
-                                        echo '<td>'.$via[1].'</td>';
-                                        echo '<td>'.$device[1].'</td>';
-                                        echo '<td>'.$proto[1].'</td>';
-                                        echo '<td>'.$metric[1].'</td>';
+					echo '<td>'.$source[1].'</td>';
+					echo '<td>'.$via[1].'</td>';
+					echo '<td>'.$device[1].'</td>';
+					echo '<td>'.$proto[1].'</td>';
+					echo '<td>'.$metric[1].'</td>';
 
 				echo "</tr>";
 			}	
@@ -278,10 +279,5 @@
 		}
 		?>
 		<br>
-		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
-			<button type="submit" name="routes" value="1">show all babel routes</button>
-			<button type="submit" name="v4table" value="1">show import/export table ipv4</button>
-			<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
-		</form>
 	</body>
 </html>
