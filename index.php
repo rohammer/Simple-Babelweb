@@ -117,6 +117,28 @@
 			echo "<table>";
 			foreach($output['data'] as $temp) { echo "<tr><td>$temp</td></tr>"; }
 			echo "</table>";
+
+			if($_GET['ip'] != '') {
+				echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
+				echo '<table>
+					<tr>
+						<th>target</th>
+						<th>installed</th>
+						<th>via</th>
+						<th>device</th>
+						<th>metric</th>
+						<th>Destination ID</th>
+					</tr>';
+				foreach($output['routes'] as $route) {
+					if ($route['target'] == $_GET['ip']) {
+						echo "<tr>";
+						foreach($route as $temp) { echo "<td>$temp</td>"; }
+						echo "</tr>";
+					}
+				}
+				echo "</table>";
+			}
+
 			echo "<H2>Interfaces</H2>";
 			echo '<table>
 			<tr>
@@ -223,27 +245,6 @@
 
 			echo "</table>";
 			}
-			if($_GET['ip'] != '') {
-				echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
-				echo '<table>
-				    <tr>
-				        <th>target</th>
-				        <th>installed</th>
-				        <th>via</th>
-				        <th>device</th>
-				        <th>metric</th>
-					<th>Destination ID</th>
-				    </tr>';
-				foreach($output['routes'] as $route) {
-				        if ($route['target'] == $_GET['ip'])
-				        {
-				                echo "<tr>";
-				                foreach($route as $temp) { echo "<td>$temp</td>"; }
-				                echo "</tr>";
-				        }
-				}
-				echo "</table>";
-		        }
 		}
 		?>
 		<br>
