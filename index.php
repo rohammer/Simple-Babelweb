@@ -68,16 +68,23 @@
 			);
 		}
 		foreach ($neighbour as $temp) {
-			$tempdata = explode(" ", $temp);
+			$address=explode(" ",strstr($temp,"address"));
+			$interface=explode(" ",strstr($temp,"interface"));
+			$reach=explode(" ",strstr($temp,"reach"));
+			$rxcost=explode(" ",strstr($temp,"rxcost"));
+			$txcost=explode(" ",strstr($temp,"txcost"));
+			$rtt=explode(" ",strstr($temp,"rtt"));
+			$rttcost=explode(" ",strstr($temp,"rttcost"));
+			$cost=explode(" ",strstr($temp,"cost"));
 			$output['neighbours'][] = array(
-				'address' => $tempdata[4],
-				'interface' => $tempdata[6],
-				'reach' => $tempdata[8],
-				'rxcost' => $tempdata[10],
-				'txcost' => $tempdata[12],
-				'rtt' => $tempdata[14],
-				'rttcost' => $tempdata[16],
-				'cost' => $tempdata[18],
+				'address' => $address[1],
+				'interface' => $interface[1],
+				'reach' => $reach[1],
+				'rxcost' => $rxcost[1],
+				'txcost' => $txcost[1],
+				'rtt' => $rtt[1],
+				'rttcost' => $rttcost[1],
+				'cost' => $cost[1],
 			);
 		}
 
