@@ -195,8 +195,17 @@
 						<th>Destination ID</th>
 					</tr>';
 				foreach($output['routes'] as $route) {
+					$set=0;
 					echo "<tr>";
-					foreach($route as $temp) { echo "<td>$temp</td>"; }
+					foreach($route as $temp) {
+						if ($set == 0) {
+							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$temp.'">'.$temp.'</a></td>';
+							$set=1; 
+						}
+						else {
+							echo "<td>$temp</td>";
+						}
+					}
 					echo "</tr>";
 				}
 				echo "</table>";
