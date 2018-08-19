@@ -235,20 +235,41 @@
 	 
 			if($_GET['v6table'] == '1') {
 				echo "<H2>ipv6 routing table</H2>";
-				echo '<table>';
+				echo '<table>
+					<tr>
+						<th>Destination</th>
+						<th>Source Specific</th>
+						<th>via</th>
+						<th>Device</th>
+						<th>proto</th>
+						<th>Kernelmetric</th>
+					</tr>';
 				$v6routen = shell_exec('ip -6 r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
 				$v6route = explode(PHP_EOL, $v6routen);
 				for($i = 0; $i < count($v6route); ++$i) {
 					echo "<tr>";
-					$line = explode(" ", $v6route[$i]);
+					/*$line = explode(" ", $v6route[$i]);
 					for($n = 0; $n < 8; ++$n) {
-					if ($n == 0) {
-						echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
-					}
-					else {
-						echo '<td>'.$line[$n].'</td>';
-					}
-				}
+						if ($n == 0) {
+							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
+						}
+						else {
+							echo '<td>'.$line[$n].'</td>';
+						}
+					}*/
+					$destination=explode(" ", $v6route[$i]);
+                                        $source=explode(" ", strstr($v6route[$i],"from"));
+                                        $via=explode(" ", strstr($v6route[$i],"via"));
+                                        $device=explode(" ", strstr($v6route[$i],"dev"));
+                                        $proto=explode(" ", strstr($v6route[$i],"proto"));
+                                        $metric=explode(" ", strstr($v6route[$i],"metric"));
+					echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$destination[0].'">'.$destination[0].'</a></td>';
+                                        echo '<td>'.$source[1].'</td>';
+                                        echo '<td>'.$via[1].'</td>';
+                                        echo '<td>'.$device[1].'</td>';
+                                        echo '<td>'.$proto[1].'</td>';
+                                        echo '<td>'.$metric[1].'</td>';
+
 				echo "</tr>";
 			}	
 
