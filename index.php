@@ -183,7 +183,7 @@
 				echo "</tr>";
 			}
 		        echo "</table>";
-			if($_REQUEST['routes'] == '1') {
+			if($_GET['routes'] == '1') {
 				echo "<H2>routes</H2>";
 				echo '<table>
 					<tr>
@@ -203,7 +203,7 @@
 			}
 
 
-			if($_REQUEST['v4table'] == '1') {
+			if($_GET['v4table'] == '1') {
 				echo "<H2>ipv4 routing table</H2>";
 				echo '<table>';
 				$v4routen = shell_exec('ip r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
@@ -224,7 +224,7 @@
 				echo "</table>";
 			}
 	 
-			if($_REQUEST['v6table'] == '1') {
+			if($_GET['v6table'] == '1') {
 				echo "<H2>ipv6 routing table</H2>";
 				echo '<table>';
 				$v6routen = shell_exec('ip -6 r s t $(grep import-table /etc/babeld.conf | cut -f2 -d" ")');
@@ -248,7 +248,7 @@
 		}
 		?>
 		<br>
-		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
+		<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
 			<button type="submit" name="routes" value="1">show all babel routes</button>
 			<button type="submit" name="v4table" value="1">show import/export table ipv4</button>
 			<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
