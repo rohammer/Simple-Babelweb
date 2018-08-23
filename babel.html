@@ -1,0 +1,83 @@
+#!/usr/bin/haserl
+
+<%
+echo -en "Content-Type: text/html\r\n\r\n"
+HOSTNAME="$(uci -q get "fff.system.hostname")"
+
+data=$(echo "dump" | nc ::1 33123)
+
+%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title><%= ${HOSTNAME} %></title>
+	<link href="/style.css" rel="stylesheet" type="text/css" media="screen" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="expires" content="0" />
+		<style>
+			table {
+				font-family: monospace, sans-serif;
+				border-collapse: collapse;
+			}
+			td, th {
+				border: 1px solid #fddddd;
+				text-align: left;
+				padding: 1px;
+				padding-right: 10px;
+			}
+			tr:nth-child(even) {
+				background-color: #dddddd;
+			}
+		</style>
+</head>
+<body>
+<h1>Simple Babelweb</h1>
+
+<H2>Babel information</H2>
+<table>
+	<tr>
+		<td><% echo "$data" | head -n 1 %> </td>
+	</tr>
+        <tr>
+                <td><% echo "$data" | head -n 2 | tail -n 1 %> </td>
+        </tr>
+        <tr>
+                <td><% echo "$data" | head -n 3 | tail -n 1 %> </td>
+        </tr>
+        <tr>
+                <td><% echo "$data" | head -n 4 | tail -n 1 %> </td>
+        </tr>
+
+</table>
+
+<H2>Interfaces</H2>
+<table>
+	<tr>
+		<th>Interface</th>
+		<th>up</th>
+		<th>ipv6</th>
+		<th>ipv4</th>
+	</tr>
+	<%                                                                  
+	echo "$data" | grep interface | while read line ; do                
+		echo "<tr>"
+		echo "<td>"
+        	echo ${line#*interface} | cut -d " " -f 1                   
+		echo "</td>"
+                echo "<td>"                                         
+                echo ${line#*up} | cut -d " " -f 1           
+                echo "</td>"                
+		echo "<td>"                                         
+                echo ${line#*ipv6} | cut -d " " -f 1           
+                echo "</td>"                
+		echo "<td>"                                         
+                echo ${line#*ipv4} | cut -d " " -f 1           
+                echo "</td>"
+		echo "</tr>"
+	done                                                                
+%> 
+</table>
+</body>
+</html>
+
