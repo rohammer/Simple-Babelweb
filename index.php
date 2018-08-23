@@ -69,7 +69,7 @@
 		}
 		foreach ($neighbour as $temp) {
 			$address=explode(" ",strstr($temp,"address"));
-			$interface=explode(" ",strstr($temp,"interface"));
+			$interface=explode(" ",strstr($temp,"if"));
 			$reach=explode(" ",strstr($temp,"reach"));
 			$rxcost=explode(" ",strstr($temp,"rxcost"));
 			$txcost=explode(" ",strstr($temp,"txcost"));
