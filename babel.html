@@ -33,7 +33,14 @@ data=$(echo "dump" | nc ::1 33123)
 </head>
 <body>
 <h1>Simple Babelweb</h1>
-
+<br />
+<form action="babel.html" method="get">
+	<button type="submit" name="" value="">home</button>
+	<button type="submit" name="routes" value="1">show all babel routes</button>
+	<button type="submit" name="v4table" value="1">show import/export table ipv4</button>
+	<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
+</form>
+<br />
 <H2>Babel information</H2>
 <table>
 	<tr>
@@ -50,6 +57,11 @@ data=$(echo "dump" | nc ::1 33123)
         </tr>
 
 </table>
+<br />
+
+<%
+if ! [ ${GET_routes} ] && ! [ ${GET_v4table} ] && ! [ ${GET_v6table} ]; then
+%>
 
 <H2>Interfaces</H2>
 <table>
@@ -63,7 +75,7 @@ data=$(echo "dump" | nc ::1 33123)
 	echo "$data" | grep interface | while read line ; do                
 		echo "<tr>"
 		echo "<td>"
-        	echo ${line#*interface} | cut -d " " -f 1                   
+		echo ${line#*interface} | cut -d " " -f 1                   
 		echo "</td>"
                 echo "<td>"                                         
                 echo ${line#*up} | cut -d " " -f 1           
@@ -76,8 +88,177 @@ data=$(echo "dump" | nc ::1 33123)
                 echo "</td>"
 		echo "</tr>"
 	done                                                                
-%> 
+	%>
+</table>
+<br />
+<H2>Neighbours</H2>
+<table>
+	<tr>
+		<th>address</th>
+		<th>interface</th>
+		<th>reach</th>
+		<th>rxcost</th>
+		<th>txcost</th>
+		<th>rtt</th>
+		<th>rttcost</th>
+		<th>cost</th>
+	</tr>
+        <%
+        echo "$data" | grep neighbour | while read line ; do                 
+                echo "<tr>"              
+                echo "<td>"                                                       
+                echo ${line#*address} | cut -d " " -f 1     
+                echo "</td>"                           
+                echo "<td>"                      
+                echo ${line#*if} | cut -d " " -f 1
+                echo "</td>"   
+                echo "<td>"                                        
+                echo ${line#*reach} | cut -d " " -f 1      
+                echo "</td>"
+                echo "<td>"     
+                echo ${line#*rxcost} | cut -d " " -f 1      
+                echo "</td>"         
+                echo "<td>"     
+                echo ${line#*txcost} | cut -d " " -f 1      
+                echo "</td>"  
+                echo "<td>"     
+                echo ${line#*rtt} | cut -d " " -f 1      
+                echo "</td>"  
+                echo "<td>"                                 
+                echo ${line#*rttcost} | cut -d " " -f 1
+                echo "</td>"  
+                echo "<td>"     
+                echo ${line#*cost} | cut -d " " -f 1      
+                echo "</td>"              
+                echo "</tr>"                 
+        done                                        
+        %> 
+</table>
+<br />
+<H2>Redistributed routes</H2>
+<table>
+	<tr>
+	<th>prefix</th>
+	<th>metric</th>
+	</tr>
+
+        <%
+        echo "$data" | grep xroute | while read line ; do                 
+                echo "<tr>"              
+                echo "<td>"                                                       
+                echo ${line#*prefix} | cut -d " " -f 1     
+                echo "</td>"                           
+                echo "<td>"                      
+                echo ${line#*metric} | cut -d " " -f 1
+                echo "</td>"               
+                echo "</tr>"                 
+        done                                        
+        %> 
+
+</table>
+<%
+fi
+
+if [ ${GET_routes} ]; then
+%>
+<table>
+	<tr>
+		<th>target</th>
+		<th>installed</th>
+		<th>via</th>
+		<th>device</th>
+		<th>metric</th>
+		<th>Destination ID</th>
+	</tr>
+<%
+        echo "$data" | grep route | grep -v xroute | while read line ; do                 
+                echo "<tr>"                
+                echo "<td>"                                        
+                echo ${line#*prefix} | cut -d " " -f 1      
+                echo "</td>"
+                echo "<td>"     
+                echo ${line#*installed} | cut -d " " -f 1      
+                echo "</td>"         
+                echo "<td>"     
+                echo ${line#*via} | cut -d " " -f 1      
+                echo "</td>"  
+                echo "<td>"     
+                echo ${line#*if} | cut -d " " -f 1      
+                echo "</td>"  
+                echo "<td>"                                 
+                echo ${line#*metric} | cut -d " " -f 1
+                echo "</td>"  
+                echo "<td>"     
+                echo ${line#*id} | cut -d " " -f 1      
+                echo "</td>"              
+                echo "</tr>"                 
+        done
+fi
+%>
+</table>
+<%
+if [ ${GET_v4table} ]; then                                                                                     
+%>                                                       
+<table>                                           
+        <tr>                                                                 
+                <th>target</th>                         
+                <th>via</th>                                                
+                <th>dev</th>                                                                   
+        </tr>                                                            
+<%         
+	v4routen=$(ip ro sh tab 10)                                                           
+        echo "$v4routen" | while read line ; do
+                echo "<tr>"                                              
+                echo "<td>"                                              
+                echo $line | cut -d " " -f 1                   
+                echo "</td>"                                             
+                echo "<td>"                              
+                echo ${line#*via} | cut -d " " -f 1
+                echo "</td>"                             
+                echo "<td>"                                                 
+                echo ${line#*dev} | cut -d " " -f 1       
+                echo "</td>"                                                                                            
+                echo "</tr>"                                                                 
+        done                                      
+fi
+
+%>
+</table>
+<%
+
+if [ ${GET_v6table} ]; then                                                                                     
+%>                                                       
+<table>                                           
+        <tr>                                                                 
+		<th>Destination</th>
+		<th>Source Specific</th>
+		<th>via</th>
+		<th>Device</th>
+		<th>Kernelmetric</th>                                                                  
+        </tr>                                                            
+<%         
+	v6routen=$(ip -6 ro sh tab 10)                                                           
+        echo "$v6routen" |  while read line ; do
+                echo "<tr>"                                              
+                echo "<td>"                                              
+                echo $line | cut -d " " -f 1                   
+                echo "</td>"                                             
+                echo "<td>"                              
+                echo ${line#*from} | cut -d " " -f 1
+                echo "</td>"                             
+                echo "<td>"                                                 
+                echo ${line#*via} | cut -d " " -f 1       
+                echo "</td>"                  
+		echo "<td>"                                                 
+                echo ${line#*dev} | cut -d " " -f 1       
+                echo "</td>"    
+                echo "<td>"                                                 
+                echo ${line#*metric} | cut -d " " -f 1       
+                echo "</td>"                                                                                          
+                echo "</tr>"                                                                 
+        done                                      
+fi
+%>
 </table>
 </body>
 </html>
-
