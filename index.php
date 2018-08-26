@@ -69,7 +69,7 @@
 		}
 		foreach ($neighbour as $temp) {
 			$address=explode(" ",strstr($temp,"address"));
-			$interface=explode(" ",strstr($temp,"interface"));
+			$interface=explode(" ",strstr($temp,"if"));
 			$reach=explode(" ",strstr($temp,"reach"));
 			$rxcost=explode(" ",strstr($temp,"rxcost"));
 			$txcost=explode(" ",strstr($temp,"txcost"));
@@ -123,6 +123,7 @@
 			<H2>Babel information</H2><?php
 			
 			echo "<table>";
+			echo '<tr><td><a href="https://github.com/rohammer/Simple-Babelweb">Quellcode Simple Babelweb</a></td></tr>';
 			foreach($output['data'] as $temp) { echo "<tr><td>$temp</td></tr>"; }
 			echo "</table>";
 
