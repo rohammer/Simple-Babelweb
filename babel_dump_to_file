@@ -1,0 +1,21 @@
+#!/bin/bash
+[ $# != 1 ] && echo "parameter tmpfile missing!" && exit
+tmpfile=$1
+
+# bind babel-socket to FD3
+exec 3<>/dev/tcp/::1/33123
+
+# read and write data
+cat <&3 > "$tmpfile" &
+
+# write "dump" to sock
+echo dump >&3
+
+# Wait a moment and close FD3
+sleep 0.1
+exec 3<&-
+
+# and clean up
+pkill -P $$ 
+
+ 
