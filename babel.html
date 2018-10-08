@@ -101,7 +101,7 @@ if [ ${GET_routes} ]; then
 fi
 if [ ${GET_v4table} ]; then                                                                                     
 %>                                                       
-<H2>Show IPv6 Routing Tabele</H2 
+	<H2>Show IPv6 Routing Tabele</H2> 
 <%         
 	v4routen=$(ip ro sh tab 10)                                                           
         echo "$v4routen" | while read line ; do
