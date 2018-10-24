@@ -1,3 +1,57 @@
+<?php
+function checkip($ip) {
+
+    // Überprüfen, ob eine IP angegeben wurde
+    if($ip == "") {
+        
+        die("Es wurde keine IP Adresse angegeben.");
+        
+    }
+    else {
+    
+        // Segmente der IP Adresse in ein Array einlesen
+        $part = split("[.]", $ip);
+        
+        // Wenn... Keine 4 Segmente gefunden wurde
+        if(count($part) != 4) {
+        
+            die("Die IP Adresse ist nicht vollständig.");
+        
+        }
+        else {
+        
+            // Start einer Schleife für die Überprüfung jedes einzelnen Segments
+            for($i=0; $i<count($part); $i++) {
+            
+                // Wenn... Das Segment nicht nur aus Ziffern besteht
+                if(!is_numeric($part[$i])) {
+                
+                    die("Die IP Adresse ist nicht numerisch.");
+                
+                }
+                else {
+                
+                    // Wenn... Ein Segment größer als 255 ist
+                    if($part[$i] > 255) {
+                    
+                        die("Ein Teilstück der IP Adresse ist grö&szli;ger als 255.");
+                    
+                    }
+                
+                }
+            
+            }
+        
+        }
+            
+    }
+    
+    // Noch nicht abgebrochen? -> True zurückliefern
+    return true;
+    
+} 
+?>
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -22,7 +76,7 @@
 	<body>
 		<?php
 		error_reporting(0);
-		$addr = "::1";
+/*		$addr = "::1";
 		$port = shell_exec('grep local-port /etc/babeld.conf | cut -d" " -f 2');
 
 		$msg = "dump\r\n";
@@ -39,8 +93,11 @@
 		$neighbour = array();
 		$xroute = array();
 		$route= array();
+*/
+		$file="/tmp/babeldump";
+		shell_exec('echo "dump" | nc ::1 33123 -q 0 > '.$file.'');
 
-		while (1) {
+/*		while (1) {
 			$read = socket_read($sock, 1024, PHP_NORMAL_READ);
 			if (preg_match("/interface\b/", $read)) { $interface[] = $read; }
 			if (preg_match("/neighbour\b/", $read)) { $neighbour[] = $read; }
@@ -50,6 +107,25 @@
  			if (preg_match("/ok/", $read)){ break 1; }
             	}
 		socket_close($sock);
+*/
+		$file_handle = fopen($file, 'r');
+		$set=0;
+		$i=0;
+		while (1) {
+			$line = fgets($file_handle);
+			if ($i <= 5) { 
+				$data[] = $line; 
+				$i++;
+			}
+			if (preg_match("/interface\b/", $line)) { $interface[] = $line; }
+			if (preg_match("/neighbour\b/", $line)) { $neighbour[] = $line; }
+			if (preg_match("/xroute\b/", $line)) { $xroute[] = $line; }
+			#if (preg_match("/\broute\b/", $read)){ break 1; }
+			if (preg_match("/\broute\b/", $line)){ $route[] = $line; }
+			if (preg_match("/ok/", $line)){ $set++; }
+			if ($set == 2) { break; }
+		}
+		fclose($file_handle);
 
 		$output['data'] = array(
 			'name' => $data[0],
@@ -119,6 +195,7 @@
         	                <button type="submit" name="routes" value="1">show all babel routes</button>
                 	        <button type="submit" name="v4table" value="1">show import/export table ipv4</button>
                         	<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
+				<button type="submit" name="lg" value="1">Looking glass</button>
 	                </form>
 			<H2>Babel information</H2><?php
 			
@@ -277,6 +354,25 @@
 
 			echo "</table>";
 			}
+			
+			if($_GET['lg'] == '1') {
+				?>
+				<form action="index.php?lg=1" method="post">
+				IPv4 Adresse: <input type="text" size="17" name="IP">
+				<input type="submit" value="OK">
+				</form>
+				<?php
+				if (checkip($_POST['IP']))
+				{
+					$IP = $_POST['IP'];
+					echo "Pinge $IP: <br /><pre>";
+					echo shell_exec('ping '.$IP.' -c 3');
+					echo "</pre>Traceroute $IP <br /><pre>";
+					echo shell_exec('traceroute '.$IP.'');
+					echo "</pre>";
+				}
+			}
+
 		}
 		?>
 		<br>
