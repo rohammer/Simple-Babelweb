@@ -279,13 +279,12 @@
 				<input type="submit" value="OK">
 				</form>
 				<?php
-				$ip1 =$_POST['IP'];
-				if (filter_var($ip1, FILTER_VALIDATE_IP)) {
-					$IP = $_POST['IP'];
-					echo "Pinge $IP: <br /><pre>";
-					echo shell_exec('ping '.$IP.' -c 3');
-					echo "</pre>Traceroute $IP <br /><pre>";
-					echo shell_exec('traceroute '.$IP.'');
+				$ip =$_POST['IP'];
+				if (filter_var($ip, FILTER_VALIDATE_IP)) {
+					echo "Pinge $ip: <br /><pre>";
+					echo shell_exec('ping '.$ip.' -c 3');
+					echo "</pre>Traceroute $ipP <br /><pre>";
+					echo shell_exec('traceroute '.$ip.'');
 					echo "</pre>";
 
 				} else {
