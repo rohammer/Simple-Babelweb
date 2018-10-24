@@ -1,57 +1,3 @@
-<?php
-function checkip($ip) {
-
-    // Überprüfen, ob eine IP angegeben wurde
-    if($ip == "") {
-        
-        die("Es wurde keine IP Adresse angegeben.");
-        
-    }
-    else {
-    
-        // Segmente der IP Adresse in ein Array einlesen
-        $part = split("[.]", $ip);
-        
-        // Wenn... Keine 4 Segmente gefunden wurde
-        if(count($part) != 4) {
-        
-            die("Die IP Adresse ist nicht vollständig.");
-        
-        }
-        else {
-        
-            // Start einer Schleife für die Überprüfung jedes einzelnen Segments
-            for($i=0; $i<count($part); $i++) {
-            
-                // Wenn... Das Segment nicht nur aus Ziffern besteht
-                if(!is_numeric($part[$i])) {
-                
-                    die("Die IP Adresse ist nicht numerisch.");
-                
-                }
-                else {
-                
-                    // Wenn... Ein Segment größer als 255 ist
-                    if($part[$i] > 255) {
-                    
-                        die("Ein Teilstück der IP Adresse ist grö&szli;ger als 255.");
-                    
-                    }
-                
-                }
-            
-            }
-        
-        }
-            
-    }
-    
-    // Noch nicht abgebrochen? -> True zurückliefern
-    return true;
-    
-} 
-?>
-
 <!DOCTYPE html>
 <html>
 	<head>
@@ -329,18 +275,21 @@ function checkip($ip) {
 			if($_GET['lg'] == '1') {
 				?>
 				<form action="index.php?lg=1" method="post">
-				IPv4 Adresse: <input type="text" size="17" name="IP">
+				IP Adresse (v4 und v6): <input type="text" size="17" name="IP">
 				<input type="submit" value="OK">
 				</form>
 				<?php
-				if (checkip($_POST['IP']))
-				{
+				$ip1 =$_POST['IP'];
+				if (filter_var($ip1, FILTER_VALIDATE_IP)) {
 					$IP = $_POST['IP'];
 					echo "Pinge $IP: <br /><pre>";
 					echo shell_exec('ping '.$IP.' -c 3');
 					echo "</pre>Traceroute $IP <br /><pre>";
 					echo shell_exec('traceroute '.$IP.'');
 					echo "</pre>";
+
+				} else {
+					echo("$ip1 is not a valid IP address");
 				}
 			}
 
