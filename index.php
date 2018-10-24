@@ -76,38 +76,9 @@ function checkip($ip) {
 	<body>
 		<?php
 		error_reporting(0);
-/*		$addr = "::1";
-		$port = shell_exec('grep local-port /etc/babeld.conf | cut -d" " -f 2');
-
-		$msg = "dump\r\n";
-		$sock = socket_create(AF_INET6, SOCK_STREAM, 0) or die("Cannot create socket");
-		socket_connect($sock, $addr, $port) or die("Cannot connect to socket");
-		$read = socket_read($sock, 1024);
-		$data = explode(PHP_EOL, $read);
-
-		# dump anfordern
-		socket_write($sock, $msg, strlen($msg));
-
-		# Daten einlesen
-		$interface = array();
-		$neighbour = array();
-		$xroute = array();
-		$route= array();
-*/
 		$file="/tmp/babeldump";
 		shell_exec('echo "dump" | nc ::1 33123 -q 0 > '.$file.'');
 
-/*		while (1) {
-			$read = socket_read($sock, 1024, PHP_NORMAL_READ);
-			if (preg_match("/interface\b/", $read)) { $interface[] = $read; }
-			if (preg_match("/neighbour\b/", $read)) { $neighbour[] = $read; }
-			if (preg_match("/xroute\b/", $read)) { $xroute[] = $read; }
-			#if (preg_match("/\broute\b/", $read)){ break 1; }
-			if (preg_match("/\broute\b/", $read)){ $route[] = $read; }
- 			if (preg_match("/ok/", $read)){ break 1; }
-            	}
-		socket_close($sock);
-*/
 		$file_handle = fopen($file, 'r');
 		$set=0;
 		$i=0;
