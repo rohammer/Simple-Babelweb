@@ -40,7 +40,7 @@ data=$(echo "dump" | nc ::1 33123)
 	<button type="submit" name="v4table" value="1">show import/export table ipv4</button>
 	<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
 	<input type="text" size="17" name="ip">
-        <button type="submit" name="weg" value="1">Wege zur IP Adresse</button>
+	<button type="submit" name="weg" value="1">Wege zur IP Adresse</button>
 </form>
 <br />
 <H2>Babel information</H2>
@@ -48,88 +48,88 @@ data=$(echo "dump" | nc ::1 33123)
 	<tr>
 		<td><% echo "$data" | head -n 1 %> </td>
 	</tr>
-        <tr>
-                <td><% echo "$data" | head -n 2 | tail -n 1 %> </td>
-        </tr>
-        <tr>
-                <td><% echo "$data" | head -n 3 | tail -n 1 %> </td>
-        </tr>
-        <tr>
-                <td><% echo "$data" | head -n 4 | tail -n 1 %> </td>
-        </tr>
+		<tr>
+				<td><% echo "$data" | head -n 2 | tail -n 1 %> </td>
+		</tr>
+		<tr>
+				<td><% echo "$data" | head -n 3 | tail -n 1 %> </td>
+		</tr>
+		<tr>
+				<td><% echo "$data" | head -n 4 | tail -n 1 %> </td>
+		</tr>
 </table>
 <br />
 
 <%
 if ! [ ${GET_routes} ] && ! [ ${GET_v4table} ] && ! [ ${GET_v6table} ] && ! [ ${GET_weg} ] ; then
-%>
-
-<H2>Interfaces</H2>
-<%
-	echo "$data" | grep interface | while read line ; do                
-	echo "$line"
-	echo "<br>"
-	done                                                                
 	%>
-<br />
-<H2>Neighbours</H2>
-        <%
-        echo "$data" | grep neighbour | while read line ; do                 
-                echo $line      
-                echo "<br>"                 
-        done                                        
-        %> 
-<br />
-<H2>Redistributed routes</H2>
-        <%
-        echo "$data" | grep xroute | while read line ; do                 
-                echo $line
-		echo "<br>"
-        done                                        
-        %> 
 
+	<H2>Interfaces</H2>
+	<%
+		echo "$data" | grep interface | while read line ; do
+		echo "$line"
+		echo "<br>"
+		done
+		%>
+	<br />
+	<H2>Neighbours</H2>
+		<%
+		echo "$data" | grep neighbour | while read line ; do
+			echo $line
+			echo "<br>"
+		done
+		%>
+	<br />
+	<H2>Redistributed routes</H2>
+		<%
+		echo "$data" | grep xroute | while read line ; do
+			echo $line
+			echo "<br>"
+		done
+		%>
 <%
 fi
+
 if [ ${GET_routes} ]; then
-%>                                                                                                                                                                                            
-<H2>All routes</H2>                                                                                                                                                                           
-<% 
-        echo "$data" | grep route | grep -v xroute | while read line ; do                 
-                echo $line      
-                echo "<br>"
-        done
+	%>
+	<H2>All routes</H2>
+	<%
+	echo "$data" | grep -w route | while read line ; do
+		echo $line
+		echo "<br>"
+	done
 fi
-if [ ${GET_v4table} ]; then                                                                                     
-%>                                                       
+
+if [ ${GET_v4table} ]; then
+	%>
 	<H2>Show IPv6 Routing Tabele</H2> 
-<%         
-	v4routen=$(ip ro sh tab 10)                                                           
-        echo "$v4routen" | while read line ; do
-                echo $line                   
-                echo "<br>"                                                                 
-        done                                      
+	<%
+	v4routen=$(ip ro sh tab 10)
+	echo "$v4routen" | while read line ; do
+		echo $line
+		echo "<br>"
+	done
 fi
 
-if [ ${GET_v6table} ]; then                                                                                     
-%>                                                       
-<H2>Show IPv6 Routing Tabele</H2>
-<%         
-	v6routen=$(ip -6 ro sh tab 10)                                                           
-        echo "$v6routen" |  while read line ; do
-                echo $line                   
-                echo "<br>"                              
-        done                                      
+if [ ${GET_v6table} ]; then
+	%>
+	<H2>Show IPv6 Routing Tabele</H2>
+	<%
+	v6routen=$(ip -6 ro sh tab 10)
+	echo "$v6routen" |	while read line ; do
+		echo $line
+		echo "<br>"
+	done
 fi
 
-if [ ${GET_weg} ]; then                                                                                                                                                                   
-%>                                                                                                                                                                                            
-<H2>Wege zu <%# echo ${GET_ip} %></H2>                                                                                                                                                             
-<%                                                                                                                                                                                            
-        v6routen=$(ip -6 ro sh tab 10)                                                                                                                                                        
-        echo "$v6routen" |  while read line ; do                                                                                                                                              
-                echo $line                                                                                                                                                                    
-                echo "<br>"                                                                                                                                                                   
-        done                                                                                                                                                                                  
+if [ ${GET_weg} ]; then
+	%>
+	<H2>Wege zu <%# echo ${GET_ip} %></H2>
+	<%
+	echo "$data" | grep -w route | grep "${GET_ip}" | while read line ; do
+		echo $line
+		echo "<br>"
+	done
 fi
 %>
 </table>
