@@ -65,7 +65,7 @@ if ! [ ${GET_routes} ] && ! [ ${GET_v4table} ] && ! [ ${GET_v6table} ] && ! [ ${
 	%>
 
 	<H2>Interfaces</H2>
-	<%
+	<%	
 		echo "$data" | grep interface | while read line ; do
 		echo "$line"
 		echo "<br>"
@@ -90,24 +90,23 @@ if ! [ ${GET_routes} ] && ! [ ${GET_v4table} ] && ! [ ${GET_v6table} ] && ! [ ${
 <%
 fi
 
+echo "<table>"	
 if [ ${GET_routes} ]; then
 	%>
 	<H2>All routes</H2>
 	<%
 	echo "$data" | grep -w route | while read line ; do
-		echo $line
-		echo "<br>"
+		echo "<tr><td>$line</td></tr>"
 	done
 fi
 
 if [ ${GET_v4table} ]; then
 	%>
-	<H2>Show IPv4 Routing Tabele</H2> 
+	<H2>Show IPv6 Routing Tabele</H2> 
 	<%
 	v4routen=$(ip ro sh tab 10)
 	echo "$v4routen" | while read line ; do
-		echo $line
-		echo "<br>"
+		echo "<tr><td>$line</td></tr>"
 	done
 fi
 
@@ -117,8 +116,7 @@ if [ ${GET_v6table} ]; then
 	<%
 	v6routen=$(ip -6 ro sh tab 10)
 	echo "$v6routen" |	while read line ; do
-		echo $line
-		echo "<br>"
+		echo "<tr><td>$line</td></tr>"
 	done
 fi
 
@@ -127,8 +125,7 @@ if [ ${GET_weg} ]; then
 	<H2>Wege zu <%# echo ${GET_ip} %></H2>
 	<%
 	echo "$data" | grep -w route | grep "${GET_ip}" | while read line ; do
-		echo $line
-		echo "<br>"
+		echo "<tr><td>$line</td></tr>"
 	done
 fi
 %>
