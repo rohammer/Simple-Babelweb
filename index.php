@@ -22,34 +22,27 @@
 	<body>
 		<?php
 		error_reporting(0);
-		$addr = "::1";
-		$port = shell_exec('grep local-port /etc/babeld.conf | cut -d" " -f 2');
+		$file="/tmp/babeldump";
+		shell_exec('echo "dump" | nc ::1 33123 -q 0 > '.$file.'');
 
-		$msg = "dump\r\n";
-		$sock = socket_create(AF_INET6, SOCK_STREAM, 0) or die("Cannot create socket");
-		socket_connect($sock, $addr, $port) or die("Cannot connect to socket");
-		$read = socket_read($sock, 1024);
-		$data = explode(PHP_EOL, $read);
-
-		# dump anfordern
-		socket_write($sock, $msg, strlen($msg));
-
-		# Daten einlesen
-		$interface = array();
-		$neighbour = array();
-		$xroute = array();
-		$route= array();
-
+		$file_handle = fopen($file, 'r');
+		$set=0;
+		$i=0;
 		while (1) {
-			$read = socket_read($sock, 1024, PHP_NORMAL_READ);
-			if (preg_match("/interface\b/", $read)) { $interface[] = $read; }
-			if (preg_match("/neighbour\b/", $read)) { $neighbour[] = $read; }
-			if (preg_match("/xroute\b/", $read)) { $xroute[] = $read; }
+			$line = fgets($file_handle);
+			if ($i <= 5) { 
+				$data[] = $line; 
+				$i++;
+			}
+			if (preg_match("/interface\b/", $line)) { $interface[] = $line; }
+			if (preg_match("/neighbour\b/", $line)) { $neighbour[] = $line; }
+			if (preg_match("/xroute\b/", $line)) { $xroute[] = $line; }
 			#if (preg_match("/\broute\b/", $read)){ break 1; }
-			if (preg_match("/\broute\b/", $read)){ $route[] = $read; }
- 			if (preg_match("/ok/", $read)){ break 1; }
-            	}
-		socket_close($sock);
+			if (preg_match("/\broute\b/", $line)){ $route[] = $line; }
+			if (preg_match("/ok/", $line)){ $set++; }
+			if ($set == 2) { break; }
+		}
+		fclose($file_handle);
 
 		$output['data'] = array(
 			'name' => $data[0],
@@ -119,6 +112,7 @@
         	                <button type="submit" name="routes" value="1">show all babel routes</button>
                 	        <button type="submit" name="v4table" value="1">show import/export table ipv4</button>
                         	<button type="submit" name="v6table" value="1">show import/export table ipv6</button>
+				<button type="submit" name="lg" value="1">Looking glass</button>
 	                </form>
 			<H2>Babel information</H2><?php
 			
@@ -277,6 +271,27 @@
 
 			echo "</table>";
 			}
+			
+			if($_GET['lg'] == '1') {
+				?>
+				<form action="index.php?lg=1" method="post">
+				IP Adresse (v4 und v6): <input type="text" size="17" name="IP">
+				<input type="submit" value="OK">
+				</form>
+				<?php
+				$ip =$_POST['IP'];
+				if (filter_var($ip, FILTER_VALIDATE_IP)) {
+					echo "Pinge $ip: <br /><pre>";
+					echo shell_exec('ping '.$ip.' -c 3');
+					echo "</pre>Traceroute $ipP <br /><pre>";
+					echo shell_exec('traceroute '.$ip.'');
+					echo "</pre>";
+
+				} else {
+					echo("$ip1 is not a valid IP address");
+				}
+			}
+
 		}
 		?>
 		<br>
