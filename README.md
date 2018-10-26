@@ -5,5 +5,5 @@ A very simple Babel Web for babeld v1.8
 ## index.php
 The php version for gateways
 
-## index.html
+## babel.html
 The haserl version for slim devices without php
