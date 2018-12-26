@@ -10,3 +10,6 @@ The php version for gateways
 
 ## babel.html
 The haserl version for slim devices without php
+### Requirements
+* haserl
+* netcat with ipv6 support
