@@ -283,7 +283,7 @@
 				if (filter_var($ip, FILTER_VALIDATE_IP)) {
 					echo "Pinge $ip: <br /><pre>";
 					echo shell_exec('ping '.$ip.' -c 3');
-					echo "</pre>Traceroute $ipP <br /><pre>";
+					echo "</pre>Traceroute $ip <br /><pre>";
 					echo shell_exec('traceroute '.$ip.'');
 					echo "</pre>";
 
