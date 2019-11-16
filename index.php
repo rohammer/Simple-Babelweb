@@ -23,7 +23,12 @@
 		<?php
 		error_reporting(0);
 		$file="/tmp/babeldump";
-		shell_exec('echo "dump" | nc ::1 33123 -q 1 > '.$file.'');
+
+		if (filemtime($file) < time()-60) {
+			shell_exec("rm $file && touch $file");
+			shell_exec('echo "dump" | nc ::1 33123 -q 0 > '.$file.'');
+			echo "File generate";
+		}
 
 		$file_handle = fopen($file, 'r');
 		$set=0;
