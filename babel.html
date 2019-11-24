@@ -3,8 +3,16 @@
 <%
 echo -en "Content-Type: text/html\r\n\r\n"
 HOSTNAME="$(uci -q get "fff.system.hostname")"
+lockfile="/tmp/simple.babelweb.lock"
+
+if [ -e $lockfile ];then
+	if [ 30 -gt $(( $(date +%s) - $(date -r $lockfile +%s) )) ];then
+		echo "only one access per minute!!" && exit
+	fi
+fi
 
 data=$(echo "dump" | nc ::1 33123)
+touch $lockfile
 
 %><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
