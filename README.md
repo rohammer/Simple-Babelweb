@@ -13,3 +13,7 @@ The haserl version for slim devices without php
 ### Requirements
 * haserl
 * netcat with ipv6 support
+
+## Apache 2 settings
+To avoid OOM Killer it's usefull to reduce the MaxConnectionsPerChild on apache2. On Debian open /etc/apache2/mods-enabled/mpm_prefork.conf and reduce MaxConnectionsPerChild.
+Do not use more then 10 MaxConnectionsPerChild per Gigabyte RAM on your System.

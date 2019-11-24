@@ -23,7 +23,10 @@
 		<?php
 		error_reporting(0);
 		$file="/tmp/babeldump";
-		shell_exec('echo "dump" | nc ::1 33123 -q 1 > '.$file.'');
+
+		if (filemtime($file) < time()-10) {
+			shell_exec('echo "dump" | nc ::1 33123 -q 1 > '.$file.'');
+		}
 
 		$file_handle = fopen($file, 'r');
 		$set=0;
