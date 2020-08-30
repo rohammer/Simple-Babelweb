@@ -292,7 +292,7 @@
                                         echo shell_exec('ip route get '.$ip.'');
                                         echo "</pre>";
 				} else {
-					echo("$ip1 is not a valid IP address");
+					echo("This is not a valid IP address");
 				}
 			}
 
