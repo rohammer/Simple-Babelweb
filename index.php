@@ -288,9 +288,9 @@
 					echo shell_exec('ping '.$ip.' -c 3');
 					echo "</pre>Traceroute $ip <br /><pre>";
 					echo shell_exec('traceroute '.$ip.'');
-                                        echo "</pre>Aktuelle Route:<pre>";
-                                        echo shell_exec('ip route get '.$ip.'');
-                                        echo "</pre>";
+					echo "</pre>Aktuelle Route:<pre>";
+					echo shell_exec('ip route get '.$ip.'');
+					echo "</pre>";
 				} else {
 					echo("This is not a valid IP address");
 				}
