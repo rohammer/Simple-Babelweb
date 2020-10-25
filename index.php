@@ -125,6 +125,13 @@
 			echo "</table>";
 
 			if($_GET['ip'] != '') {
+				if ( preg_match("#/#", $_GET['ip']) == 0) {
+					if ( preg_match("#:#", $_GET['ip']) == 0) {
+						$_GET['ip'] = $_GET['ip'] . "/32";
+					} else {
+						$_GET['ip'] = $_GET['ip'] . "/128";
+					}
+				}
 				echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
 				echo '<table>
 					<tr>
