@@ -293,9 +293,9 @@
 				$ip =$_POST['IP'];
 				if (filter_var($ip, FILTER_VALIDATE_IP)) {
 					echo "Pinge $ip: <br /><pre>";
-					echo shell_exec('ping '.$ip.' -c 3');
+					echo shell_exec('ping '.$ip.' -c 3 -W2');
 					echo "</pre>Traceroute $ip <br /><pre>";
-					echo shell_exec('traceroute '.$ip.'');
+					echo shell_exec('traceroute -w2 '.$ip.'');
 					echo "</pre>Aktuelle Route:<pre>";
 					echo shell_exec('ip route get '.$ip.'');
 					echo "</pre>";
