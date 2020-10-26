@@ -125,14 +125,15 @@
 			echo "</table>";
 
 			if($_GET['ip'] != '') {
-				if ( preg_match("#/#", $_GET['ip']) == 0) {
-					if ( preg_match("#:#", $_GET['ip']) == 0) {
-						$_GET['ip'] = $_GET['ip'] . "/32";
+				$ipaddr = $_GET['ip'];
+				if ( preg_match("#/#", $ipaddr) == 0) {
+					if ( preg_match("#:#", $ipaddr) == 0) {
+						$ipaddr = $ipaddr . "/32";
 					} else {
-						$_GET['ip'] = $_GET['ip'] . "/128";
+						$ipaddr = $ipaddr . "/128";
 					}
 				}
-				echo '<H2>Wege zu '.$_GET["ip"].'</H2>';
+				echo '<H2>Wege zu '.$ipaddr.'</H2>';
 				echo '<table>
 					<tr>
 						<th>target</th>
@@ -143,7 +144,7 @@
 						<th>Destination ID</th>
 					</tr>';
 				foreach($output['routes'] as $route) {
-					if ($route['target'] == $_GET['ip']) {
+					if ($route['target'] == $ipaddr) {
 						echo "<tr>";
 						foreach($route as $temp) { echo "<td>$temp</td>"; }
 						echo "</tr>";
