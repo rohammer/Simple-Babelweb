@@ -31,8 +31,10 @@
 		$file_handle = fopen($file, 'r');
 		$set=0;
 		$i=0;
-		while (1) {
-			$line = fgets($file_handle);
+		// Stop at end of file as well: if babeld does not answer, the dump has
+		// fewer than two "ok" lines and the loop would never end (page hangs
+		// until the PHP time limit).
+		while ($file_handle && ($line = fgets($file_handle)) !== false) {
 			if ($i <= 5) { 
 				$data[] = $line; 
 				$i++;
@@ -45,7 +47,7 @@
 			if (preg_match("/ok/", $line)){ $set++; }
 			if ($set == 2) { break; }
 		}
-		fclose($file_handle);
+		if ($file_handle) { fclose($file_handle); }
 
 		$output['data'] = array(
 			'name' => $data[0],
@@ -64,23 +66,20 @@
 			);
 		}
 		foreach ($neighbour as $temp) {
-			$address=explode(" ",strstr($temp,"address"));
-			$interface=explode(" ",strstr($temp,"if"));
-			$reach=explode(" ",strstr($temp,"reach"));
-			$rxcost=explode(" ",strstr($temp,"rxcost"));
-			$txcost=explode(" ",strstr($temp,"txcost"));
-			$rtt=explode(" ",strstr($temp,"rtt"));
-			$rttcost=explode(" ",strstr($temp,"rttcost"));
-			$cost=explode(" ",strstr($temp,"cost"));
+			// Read "key value" pairs by whole word: strstr($temp, "cost") found
+			// the "cost" inside "rxcost", so the cost column showed rxcost.
+			$field = function ($key) use ($temp) {
+				return preg_match('/(?<![\w-])' . $key . ' (\S+)/', $temp, $m) ? $m[1] : '';
+			};
 			$output['neighbours'][] = array(
-				'address' => $address[1],
-				'interface' => $interface[1],
-				'reach' => $reach[1],
-				'rxcost' => $rxcost[1],
-				'txcost' => $txcost[1],
-				'rtt' => $rtt[1],
-				'rttcost' => $rttcost[1],
-				'cost' => $cost[1],
+				'address' => $field('address'),
+				'interface' => $field('if'),
+				'reach' => $field('reach'),
+				'rxcost' => $field('rxcost'),
+				'txcost' => $field('txcost'),
+				'rtt' => $field('rtt'),
+				'rttcost' => $field('rttcost'),
+				'cost' => $field('cost'),
 			);
 		}
 
@@ -109,8 +108,9 @@
 			echo json_encode($output); }
 		else {
 			# Ausgabe
+			$self = htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES | ENT_SUBSTITUTE);
 			echo "<h1>Simple Babelweb</h1>";
-	                ?><form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
+	                ?><form action="<?php echo $self; ?>" method="get">
 				<button type="submit" name="" value="">home</button>
         	                <button type="submit" name="routes" value="1">show all babel routes</button>
                 	        <button type="submit" name="v4table" value="1">show import/export table ipv4</button>
@@ -124,7 +124,7 @@
 			foreach($output['data'] as $temp) { echo "<tr><td>$temp</td></tr>"; }
 			echo "</table>";
 
-			if($_GET['ip'] != '') {
+			if(is_string($_GET['ip']) && preg_match('#^[0-9a-fA-F:./]{1,64}\z#', $_GET['ip'])) {
 				$ipaddr = $_GET['ip'];
 				if ( preg_match("#/#", $ipaddr) == 0) {
 					if ( preg_match("#:#", $ipaddr) == 0) {
@@ -215,7 +215,7 @@
 					echo "<tr>";
 					foreach($route as $temp) {
 						if ($set == 0) {
-							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$temp.'">'.$temp.'</a></td>';
+							echo '<td><a href="'.$self.'?ip='.$temp.'">'.$temp.'</a></td>';
 							$set=1; 
 						}
 						else {
@@ -238,7 +238,7 @@
 					$line = explode(" ", $v4route[$i]);
 					for($n = 0; $n < 5; ++$n) {
 						if ($n == 0) {
-							echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
+							echo '<td><a href="'.$self.'?ip='.$line[$n].'">'.$line[$n].'</a></td>';
 						} 
 						else {
 							echo '<td>'.$line[$n].'</td>';
@@ -270,7 +270,7 @@
 					$device=explode(" ", strstr($v6route[$i],"dev"));
 					$proto=explode(" ", strstr($v6route[$i],"proto"));
 					$metric=explode(" ", strstr($v6route[$i],"metric"));
-					echo '<td><a href="'.$_SERVER["PHP_SELF"].'?ip='.$destination[0].'">'.$destination[0].'</a></td>';
+					echo '<td><a href="'.$self.'?ip='.$destination[0].'">'.$destination[0].'</a></td>';
 					echo '<td>'.$source[1].'</td>';
 					echo '<td>'.$via[1].'</td>';
 					echo '<td>'.$device[1].'</td>';
